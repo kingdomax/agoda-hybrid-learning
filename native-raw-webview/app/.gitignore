@@ -1,0 +1,77 @@
+# =========================
+# Android / Gradle
+# =========================
+
+.gradle/
+build/
+*/build/
+
+# Gradle local properties
+local.properties
+
+# Gradle wrapper is usually committed
+!gradle/wrapper/gradle-wrapper.jar
+
+# =========================
+# Android Studio / IntelliJ
+# =========================
+
+.idea/
+*.iml
+
+# If you want to keep shared project code style/settings, you can unignore these:
+# !.idea/codeStyles/
+# !.idea/inspectionProfiles/
+# !.idea/gradle.xml
+# !.idea/misc.xml
+# !.idea/vcs.xml
+
+# =========================
+# Kotlin
+# =========================
+
+.kotlin/
+*.kotlin_module
+
+# =========================
+# Android generated outputs
+# =========================
+
+captures/
+.externalNativeBuild/
+.cxx/
+
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+
+# Generated reports / test outputs
+app/reports/
+app/test-results/
+app/outputs/
+app/tmp/
+
+# =========================
+# Keystore / signing secrets
+# =========================
+
+*.jks
+*.keystore
+*.p12
+*.pem
+keystore.properties
+
+# =========================
+# Logs
+# =========================
+
+*.log
+
+# =========================
+# OS files
+# =========================
+
+.DS_Store
+Thumbs.db
