@@ -7,6 +7,8 @@ type WebLog = {
 };
 
 function App() {
+    console.log("Hello from React inside WebView");
+
     const [logs, setLogs] = useState<WebLog[]>([
         { id: 1, message: "React app mounted inside browser/WebView." },
     ]);
