@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
+import com.example.agodahybridlearning.bridge.AgodaNativeBridge
 
 private const val LOG_TAG = "AgodaHybridWebView"
 
@@ -61,13 +62,7 @@ fun WebShellScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(pageTitle) }
-            )
-        }
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -100,6 +95,12 @@ fun WebShellScreen(
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.cacheMode = WebSettings.LOAD_DEFAULT
+
+                        // Expose this Kotlin object to JavaScript as window.AgodaNative
+                        addJavascriptInterface(
+                            AgodaNativeBridge(webViewProvider = { webView }),
+                            "AgodaNative" // global JS object name
+                        )
 
                         webViewClient = object : WebViewClient() {
                             override fun onPageStarted(

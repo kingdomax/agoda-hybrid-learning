@@ -105,3 +105,42 @@ button:active {
     font-size: 13px;
     word-break: break-word;
 }
+
+.status-ok,
+.status-warn {
+    display: inline-flex;
+    margin: 0 0 20px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.status-ok {
+    color: #14532d;
+    background: #dcfce7;
+}
+
+.status-warn {
+    color: #7c2d12;
+    background: #ffedd5;
+}
+
+.field-group {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.field-group label {
+    font-weight: 700;
+    color: #334155;
+}
+
+.field-group input {
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font: inherit;
+}

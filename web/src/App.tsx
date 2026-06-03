@@ -1,28 +1,98 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
+import {
+    createRequestId,
+    isRunningInsideAndroidBridge,
+    type NativeResponse,
+    postToNative,
+} from "./bridge/nativeBridge";
 
 type WebLog = {
     id: number;
     message: string;
 };
 
-function App() {
-    console.log("Hello from React inside WebView");
-
+const App = () => {
     const [logs, setLogs] = useState<WebLog[]>([
-        { id: 1, message: "React app mounted inside browser/WebView." },
+        { id: 1, message: "React app mounted." },
     ]);
+    const [tokenInput, setTokenInput] = useState("demo-token-123");
+    const [bridgeAvailable, setBridgeAvailable] = useState(false);
 
     const addLog = (message: string) => {
-        setLogs((current) => [{ id: Date.now(), message }, ...current]);
+        setLogs((current) => [
+            {
+                id: Date.now() + Math.random(),
+                message,
+            },
+            ...current,
+        ]);
     };
 
-    const handleWebButtonClick = () => {
-        addLog("Button clicked from React web app.");
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setBridgeAvailable(isRunningInsideAndroidBridge());
+
+        // binding JS callback with setState in useEffect
+        window.AgodaNativeBridge = {
+            onNativeMessage: (message: NativeResponse) => {
+                addLog(`Native → JS: ${JSON.stringify(message)}`);
+            },
+        };
+
+        addLog("window.AgodaNativeBridge.onNativeMessage registered.");
+
+        return () => {
+            delete window.AgodaNativeBridge;
+        };
+    }, []);
+
+    const handlePing = () => {
+        sendToNative({
+            id: createRequestId(),
+            type: "PING",
+        });
+    };
+
+    const handleGetDeviceInfo = () => {
+        sendToNative({
+            id: createRequestId(),
+            type: "GET_DEVICE_INFO",
+        });
+    };
+
+    const handleSaveToken = () => {
+        sendToNative({
+            id: createRequestId(),
+            type: "SAVE_TOKEN",
+            payload: {
+                token: tokenInput,
+            },
+        });
+    };
+
+    const handleGetToken = () => {
+        sendToNative({
+            id: createRequestId(),
+            type: "GET_TOKEN",
+        });
     };
 
     const handleCheckUserAgent = () => {
         addLog(window.navigator.userAgent);
+    };
+
+    const sendToNative = (request: Parameters<typeof postToNative>[0]) => {
+        try {
+            addLog(`JS → Native: ${JSON.stringify(request)}`);
+            postToNative(request);
+        } catch (error) {
+            addLog(
+                `Bridge error: ${
+                    error instanceof Error ? error.message : "Unknown error"
+                }`,
+            );
+        }
     };
 
     return (
@@ -33,22 +103,39 @@ function App() {
                 <h1>Mini Booking Web</h1>
 
                 <p className="description">
-                    This React TypeScript app is running from Vite. Today we
-                    will load it inside a native Android WebView.
+                    This React app is running inside a native Android WebView.
+                    Today it communicates with Kotlin through a raw JS/native
+                    bridge.
                 </p>
 
-                <div className="button-row">
-                    <button onClick={handleWebButtonClick}>
-                        Test React Button
-                    </button>
+                <p className={bridgeAvailable ? "status-ok" : "status-warn"}>
+                    Bridge status:{" "}
+                    {bridgeAvailable ? "Available" : "Not available"}
+                </p>
 
+                <div className="field-group">
+                    <label htmlFor="token">Demo token</label>
+                    <input
+                        id="token"
+                        value={tokenInput}
+                        onChange={(event) => setTokenInput(event.target.value)}
+                    />
+                </div>
+
+                <div className="button-row">
+                    <button onClick={handlePing}>Ping Native</button>
+                    <button onClick={handleGetDeviceInfo}>
+                        Get Device Info
+                    </button>
+                    <button onClick={handleSaveToken}>Save Token Native</button>
+                    <button onClick={handleGetToken}>Get Token Native</button>
                     <button onClick={handleCheckUserAgent}>
                         Log User Agent
                     </button>
                 </div>
 
                 <section className="log-panel">
-                    <h2>Web Logs</h2>
+                    <h2>Bridge Logs</h2>
 
                     {logs.map((log) => (
                         <p key={log.id} className="log-line">
@@ -59,6 +146,6 @@ function App() {
             </section>
         </main>
     );
-}
+};
 
 export default App;
