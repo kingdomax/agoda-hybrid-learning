@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Agoda Hybrid Capacitor</string>
+    <string name="title_activity_main">Agoda Hybrid Capacitor</string>
+    <string name="package_name">com.pramoch.agodahybridcapacitor</string>
+    <string name="custom_url_scheme">com.pramoch.agodahybridcapacitor</string>
+</resources>
