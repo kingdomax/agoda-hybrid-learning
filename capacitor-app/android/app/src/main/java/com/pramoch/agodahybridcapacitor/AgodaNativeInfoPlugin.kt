@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
 @CapacitorPlugin(name = "AgodaNativeInfo") // Registers native plugin identity
 class AgodaNativeInfoPlugin : Plugin() {
 
-    companion object {
+    companion object { // companion object = static i.e.  private static readonly ConcurrentDictionary<string, string?> SessionValues = new();
         private val sessionValues = ConcurrentHashMap<String, String?>()
     }
 
