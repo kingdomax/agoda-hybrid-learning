@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { AgodaNativeInfo } from "./plugins/AgodaNativeInfo";
+import type { SessionValueChangedEvent } from "./plugins/AgodaNativeInfo";
 
 type WebLog = {
     id: number;
@@ -24,6 +25,44 @@ function App() {
             ...current,
         ]);
     };
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const registerListener = async () => {
+            const handle = await AgodaNativeInfo.addListener(
+                "sessionValueChanged",
+                (event: SessionValueChangedEvent) => {
+                    if (!isMounted) {
+                        return;
+                    }
+
+                    addLog(
+                        `Listener event: sessionValueChanged ${JSON.stringify(event)}`,
+                    );
+                },
+            );
+
+            addLog("Listener registered: sessionValueChanged");
+
+            return handle;
+        };
+
+        const handlePromise = registerListener();
+
+        return () => {
+            isMounted = false;
+
+            handlePromise
+                .then((handle) => {
+                    handle?.remove();
+                    addLog("Listener removed: sessionValueChanged");
+                })
+                .catch((error) => {
+                    console.error("Failed to remove listener", error);
+                });
+        };
+    }, []);
 
     const callPlugin = async <T,>(label: string, action: () => Promise<T>) => {
         try {
@@ -50,8 +89,8 @@ function App() {
 
                 <p className="description">
                     This React TypeScript app runs inside Capacitor Android
-                    using live URL mode. Buttons below call a custom Android
-                    Capacitor plugin written in Kotlin.
+                    using live URL mode. It calls Promise plugin methods and
+                    also listens to native/web plugin events.
                 </p>
 
                 <div className="field-group">
@@ -120,6 +159,16 @@ function App() {
                         }
                     >
                         Get Session Value
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            callPlugin("removeAllListeners", () =>
+                                AgodaNativeInfo.removeAllListeners(),
+                            )
+                        }
+                    >
+                        Remove All Listeners
                     </button>
                 </div>
 

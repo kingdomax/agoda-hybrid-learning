@@ -1,4 +1,5 @@
 import { registerPlugin } from "@capacitor/core";
+import type { PluginListenerHandle } from "@capacitor/core";
 
 export type EchoOptions = {
     value: string;
@@ -33,6 +34,13 @@ export type GetSessionValueResult = {
     value: string | null;
 };
 
+export type SessionValueChangedEvent = {
+    key: string;
+    value: string | null;
+    source: "android" | "web";
+    changedAtEpochMs: number;
+};
+
 export interface AgodaNativeInfoPlugin {
     echo(options: EchoOptions): Promise<EchoResult>;
 
@@ -45,7 +53,22 @@ export interface AgodaNativeInfoPlugin {
     getSessionValue(
         options: GetSessionValueOptions,
     ): Promise<GetSessionValueResult>;
+
+    addListener(
+        eventName: "sessionValueChanged",
+        listenerFunc: (event: SessionValueChangedEvent) => void,
+    ): Promise<PluginListenerHandle>;
+
+    removeAllListeners(): Promise<void>;
 }
 
-export const AgodaNativeInfo =
-    registerPlugin<AgodaNativeInfoPlugin>("AgodaNativeInfo"); // important must match the Android annotation later
+export const AgodaNativeInfo = registerPlugin<AgodaNativeInfoPlugin>(
+    "AgodaNativeInfo",
+    {
+        // web fallback implementation file only load when there is no native detected !
+        web: () =>
+            import("./AgodaNativeInfo.web.ts").then(
+                (module) => new module.AgodaNativeInfoWeb(),
+            ),
+    },
+);

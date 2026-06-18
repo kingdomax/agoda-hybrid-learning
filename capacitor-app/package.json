@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "start": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
+    "copy": "tsc -b && vite build && npx cap sync android",
     "lint": "eslint .",
     "preview": "vite preview"
   },

@@ -6,9 +6,11 @@ import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 @CapacitorPlugin(name = "AgodaNativeInfo") // Registers native plugin identity
+class AgodaNativeInfoPlugin : Plugin() {
 class AgodaNativeInfoPlugin : Plugin() {
 
     companion object { // companion object = static i.e.  private static readonly ConcurrentDictionary<string, string?> SessionValues = new();
@@ -20,7 +22,7 @@ class AgodaNativeInfoPlugin : Plugin() {
         val value = call.getString("value") // Reads JS input
 
         if (value.isNullOrBlank()) {
-            call.reject("value is required") // Rejects JS Promise
+            call.reject("value is required")// Rejects JS Promise 
             return
         }
 
@@ -53,6 +55,14 @@ class AgodaNativeInfoPlugin : Plugin() {
         }
 
         sessionValues[key] = value
+
+        val event = JSObject()
+        event.put("key", key)
+        event.put("value", value)
+        event.put("source", "android")
+        event.put("changedAt", System.currentTimeMillis().toString())
+
+        notifyListeners("sessionValueChanged", event)
 
         val result = JSObject() // JSON-like response object
         result.put("success", true)
