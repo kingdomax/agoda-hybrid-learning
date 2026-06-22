@@ -97,6 +97,7 @@ function App() {
                     <label htmlFor="session-key">Session key</label>
                     <input
                         id="session-key"
+                        data-testid="session-key-input"
                         value={sessionKey}
                         onChange={(event) => setSessionKey(event.target.value)}
                     />
@@ -106,6 +107,7 @@ function App() {
                     <label htmlFor="session-value">Session value</label>
                     <input
                         id="session-value"
+                        data-testid="session-value-input"
                         value={sessionValue}
                         onChange={(event) =>
                             setSessionValue(event.target.value)
@@ -172,7 +174,7 @@ function App() {
                     </button>
                 </div>
 
-                <section className="log-panel">
+                <section className="log-panel" data-testid="plugin-logs">
                     <h2>Plugin Logs</h2>
 
                     {logs.map((log) => (
